@@ -12,9 +12,8 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.exceptions import TelegramBadRequest, TelegramAPIError
 
 # ========== НАСТРОЙКИ ==========
-API_TOKEN = '8630016009:AAFCemGoNmWDjhtpA7djUIt6XgXi7lwGqm0' # Твой токен
-ADMIN_ID = 5694956927  # Твой ID
-
+API_TOKEN = os.getenv('BOT_TOKEN')
+ADMIN_ID = int(os.getenv('ADMIN_ID'))
 START_IMAGE = "https://i.postimg.cc/26JL6gM2/kot1.jpg"
 USERS_PER_PAGE = 8 # Количество пользователей на одной странице в админке
 
@@ -29,6 +28,23 @@ IMAGES = [
     "https://i.postimg.cc/gJvbXZBn/photo-2026-04-30-21-13-44.jpg",
     "https://i.postimg.cc/DZq3JXYm/photo-2026-04-30-21-13-46.jpg",
     "https://i.postimg.cc/9M3jQp1d/photo-2026-04-30-21-13-48.jpg",
+     "https://i.postimg.cc/FHjWx0XJ/thumbnail-018f07bdda6ff835b3ee30dc7572f196.jpg",
+     "https://i.postimg.cc/rwSn952m/thumbnail-6b2cc498458e6de5b5ceb24c54746954.jpg",
+     "https://i.postimg.cc/K8nq5thj/thumbnail-76be7666be5c714e881c440af442d38d.jpg",
+     "https://i.postimg.cc/cLQ9cfGx/thumbnail-8f9cb890cba522fcc3df4c69aa5d6342.jpg",
+     "https://i.postimg.cc/3xgSZ2Qv/thumbnail-8fa421c43eaccb5cb056762842a3a1c5.jpg",
+     "https://i.postimg.cc/sgp6J5Cf/thumbnail-a2c3f2d6d2194dbfa2679df4d6ddcff0.jpg",
+     "https://i.postimg.cc/9QG8ByHz/thumbnail-a68d0849094e7b90b456a1fdb2c183d3.jpg",
+     "https://i.postimg.cc/2S4cxnNb/thumbnail-cfafd01ab72c60d164caddd7e4a01a62.jpg",
+     "https://i.postimg.cc/Jzb6QjCR/thumbnail-daabf99af3f246fa753389db6186cc60.jpg",
+     "https://i.postimg.cc/9QG8ByHf/thumbnail-f58379667ea072cb7c83eca53e18db17.jpg",
+     "https://i.postimg.cc/Nj1JxRv5/thumbnail-fea1e9f71733a64f27f47ae77fa1edd4.jpg",
+
+
+
+
+
+
 ]
 
 CAPTIONS = [
