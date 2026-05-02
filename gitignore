@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+*.log
+feed_posts.json
+venv/
