@@ -12,9 +12,8 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 # ========== НАСТРОЙКИ ==========
 
-API_TOKEN = '8630016009:AAFCemGoNmWDjhtpA7djUIt6XgXi7lwGqm0'
-ADMIN_ID = 5694956927
-
+API_TOKEN = os.getenv('BOT_TOKEN')
+ADMIN_ID = int(os.getenv('ADMIN_ID'))
 START_IMAGE = "https://i.postimg.cc/26JL6gM2/kot1.jpg"
 
 IMAGES = [
@@ -50,9 +49,14 @@ CAPTIONS = [
 
 # ========== ХРАНИЛИЩЕ ==========
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-FEED_FILE = os.path.join(SCRIPT_DIR, 'feed_posts.json')
-USERS_FILE = os.path.join(SCRIPT_DIR, 'users_data.json')
+# Путь к постоянному хранилищу на Railway
+DATA_DIR = "/data"
+
+# Создаём папку, если её нет
+os.makedirs(DATA_DIR, exist_ok=True)
+
+FEED_FILE = os.path.join(DATA_DIR, 'feed_posts.json')
+USERS_FILE = os.path.join(DATA_DIR, 'users_data.json')
 
 print(f"📁 Файл ленты: {FEED_FILE}")
 print(f"📁 Файл пользователей: {USERS_FILE}")
