@@ -11,9 +11,8 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 
 # ========== НАСТРОЙКИ ==========
-API_TOKEN = '8630016009:AAFCemGoNmWDjhtpA7djUIt6XgXi7lwGqm0' # Твой токен
-ADMIN_ID = 5694956927  # Твой ID
-
+API_TOKEN = os.getenv('BOT_TOKEN')
+ADMIN_ID = int(os.getenv('ADMIN_ID'))
 START_IMAGE = "https://i.postimg.cc/26JL6gM2/kot1.jpg"
 
 IMAGES = [
