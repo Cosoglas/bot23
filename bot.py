@@ -15,7 +15,7 @@ from aiogram.exceptions import TelegramBadRequest, TelegramAPIError
 API_TOKEN = os.getenv('BOT_TOKEN')
 ADMIN_ID = int(os.getenv('ADMIN_ID'))
 START_IMAGE = "https://i.postimg.cc/26JL6gM2/kot1.jpg"
-USERS_PER_PAGE = 8 # Количество пользователей на одной странице в админке
+USERS_PER_PAGE = 8
 
 IMAGES = [
     "https://i.postimg.cc/KzXy8NQt/photo-2026-04-30-21-13-18.jpg",
@@ -28,23 +28,17 @@ IMAGES = [
     "https://i.postimg.cc/gJvbXZBn/photo-2026-04-30-21-13-44.jpg",
     "https://i.postimg.cc/DZq3JXYm/photo-2026-04-30-21-13-46.jpg",
     "https://i.postimg.cc/9M3jQp1d/photo-2026-04-30-21-13-48.jpg",
-     "https://i.postimg.cc/FHjWx0XJ/thumbnail-018f07bdda6ff835b3ee30dc7572f196.jpg",
-     "https://i.postimg.cc/rwSn952m/thumbnail-6b2cc498458e6de5b5ceb24c54746954.jpg",
-     "https://i.postimg.cc/K8nq5thj/thumbnail-76be7666be5c714e881c440af442d38d.jpg",
-     "https://i.postimg.cc/cLQ9cfGx/thumbnail-8f9cb890cba522fcc3df4c69aa5d6342.jpg",
-     "https://i.postimg.cc/3xgSZ2Qv/thumbnail-8fa421c43eaccb5cb056762842a3a1c5.jpg",
-     "https://i.postimg.cc/sgp6J5Cf/thumbnail-a2c3f2d6d2194dbfa2679df4d6ddcff0.jpg",
-     "https://i.postimg.cc/9QG8ByHz/thumbnail-a68d0849094e7b90b456a1fdb2c183d3.jpg",
-     "https://i.postimg.cc/2S4cxnNb/thumbnail-cfafd01ab72c60d164caddd7e4a01a62.jpg",
-     "https://i.postimg.cc/Jzb6QjCR/thumbnail-daabf99af3f246fa753389db6186cc60.jpg",
-     "https://i.postimg.cc/9QG8ByHf/thumbnail-f58379667ea072cb7c83eca53e18db17.jpg",
-     "https://i.postimg.cc/Nj1JxRv5/thumbnail-fea1e9f71733a64f27f47ae77fa1edd4.jpg",
-
-
-
-
-
-
+    "https://i.postimg.cc/FHjWx0XJ/thumbnail-018f07bdda6ff835b3ee30dc7572f196.jpg",
+    "https://i.postimg.cc/rwSn952m/thumbnail-6b2cc498458e6de5b5ceb24c54746954.jpg",
+    "https://i.postimg.cc/K8nq5thj/thumbnail-76be7666be5c714e881c440af442d38d.jpg",
+    "https://i.postimg.cc/cLQ9cfGx/thumbnail-8f9cb890cba522fcc3df4c69aa5d6342.jpg",
+    "https://i.postimg.cc/3xgSZ2Qv/thumbnail-8fa421c43eaccb5cb056762842a3a1c5.jpg",
+    "https://i.postimg.cc/sgp6J5Cf/thumbnail-a2c3f2d6d2194dbfa2679df4d6ddcff0.jpg",
+    "https://i.postimg.cc/9QG8ByHz/thumbnail-a68d0849094e7b90b456a1fdb2c183d3.jpg",
+    "https://i.postimg.cc/2S4cxnNb/thumbnail-cfafd01ab72c60d164caddd7e4a01a62.jpg",
+    "https://i.postimg.cc/Jzb6QjCR/thumbnail-daabf99af3f246fa753389db6186cc60.jpg",
+    "https://i.postimg.cc/9QG8ByHf/thumbnail-f58379667ea072cb7c83eca53e18db17.jpg",
+    "https://i.postimg.cc/Nj1JxRv5/thumbnail-fea1e9f71733a64f27f47ae77fa1edd4.jpg",
 ]
 
 CAPTIONS = [
@@ -53,7 +47,7 @@ CAPTIONS = [
 ]
 
 # ========== ХРАНИЛИЩЕ ==========
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))  # ИСПРАВЛЕНО: было file
 FEED_FILE = os.path.join(SCRIPT_DIR, 'feed_posts.json')
 USERS_FILE = os.path.join(SCRIPT_DIR, 'users_data.json')
 
@@ -103,7 +97,7 @@ def update_user_data(user_id, username, first_name):
     user_id_str = str(user_id)
     now_time = datetime.now().strftime('%d.%m.%Y %H:%M')
     if user_id_str not in users_data:
-        users_data[user_id_str] = { 'first_seen': now_time, 'messages_count': 0 }
+        users_data[user_id_str] = {'first_seen': now_time, 'messages_count': 0}
         print(f"👤 Новый пользователь: {first_name} (ID: {user_id})")
 
     users_data[user_id_str].update({
@@ -115,14 +109,14 @@ def update_user_data(user_id, username, first_name):
 
 def set_all_users_offline():
     """Устанавливает всем пользователям статус 'оффлайн'."""
-    if not users_data: return
+    if not users_data:
+        return
     for user_id in users_data:
         users_data[user_id]['is_online'] = False
     if save_data(USERS_FILE, users_data):
         print("ℹ️ Все пользователи помечены как оффлайн.")
 
 # ========== КЛАВИАТУРЫ ==========
-
 def get_start_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🖼️ Рандомное пх", callback_data="random_pic")],
@@ -202,8 +196,8 @@ def get_view_post_keyboard(post_index, total_posts):
 def get_confirm_delete_keyboard(post_index):
     return InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="Да, удалить", callback_data=f"admin_confirm_delete:{post_index}"),
-            InlineKeyboardButton(text="Нет, отмена", callback_data=f"admin_view_posts:{post_index}")
+            InlineKeyboardButton(text="✅ Да, удалить", callback_data=f"admin_confirm_delete:{post_index}"),
+            InlineKeyboardButton(text="❌ Нет, отмена", callback_data=f"admin_view_posts:{post_index}")
         ]
     ])
 
@@ -214,19 +208,27 @@ async def cmd_start(message: types.Message, state: FSMContext):
     update_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
     await message.answer_photo(
         photo=START_IMAGE,
-        caption="🎨 **Добро пожаловать!**\n\nВыбери, что хочешь сделать:",
-        reply_markup=get_start_keyboard(),
-        parse_mode="Markdown"
+        caption="🎨 Добро пожаловать!\n\nВыбери, что хочешь сделать:",
+        reply_markup=get_start_keyboard()
     )
 
 @dp.callback_query(F.data == "main_menu")
 async def show_main_menu(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
     update_user_data(callback.from_user.id, callback.from_user.username, callback.from_user.first_name)
-    await callback.message.edit_media(
-        media=InputMediaPhoto(media=START_IMAGE, caption="🎨 **Главное меню**\n\nВыбери действие:", parse_mode="Markdown"),
-        reply_markup=get_start_keyboard()
-    )
+    try:
+        await callback.message.edit_media(
+            media=InputMediaPhoto(media=START_IMAGE, caption="🎨 Главное меню\n\nВыбери действие:"),
+            reply_markup=get_start_keyboard()
+        )
+    except TelegramBadRequest:
+        # ИСПРАВЛЕНО: если сообщение текстовое, удаляем и отправляем новое
+        await callback.message.delete()
+        await callback.message.answer_photo(
+            photo=START_IMAGE,
+            caption="🎨 Главное меню\n\nВыбери действие:",
+            reply_markup=get_start_keyboard()
+        )
     await callback.answer()
 
 @dp.callback_query(F.data == "random_pic")
@@ -234,23 +236,39 @@ async def send_random_pic(callback: types.CallbackQuery):
     update_user_data(callback.from_user.id, callback.from_user.username, callback.from_user.first_name)
     random_image = random.choice(IMAGES)
     random_caption = random.choice(CAPTIONS)
-    await callback.message.edit_media(
-        media=InputMediaPhoto(media=random_image, caption=random_caption),
-        reply_markup=get_after_pic_keyboard()
-    )
+    try:
+        await callback.message.edit_media(
+            media=InputMediaPhoto(media=random_image, caption=random_caption),
+            reply_markup=get_after_pic_keyboard()
+        )
+    except TelegramBadRequest:
+        # ИСПРАВЛЕНО: обработка ошибки если сообщение не с фото
+        await callback.message.delete()
+        await callback.message.answer_photo(
+            photo=random_image,
+            caption=random_caption,
+            reply_markup=get_after_pic_keyboard()
+        )
     await callback.answer()
 
-# ========== ОБРАБОТЧИКИ ЛЕНТЫ И ПРЕДЛОЖКИ (ВОССТАНОВЛЕННЫЕ) ==========
-
+# ========== ОБРАБОТЧИКИ ЛЕНТЫ И ПРЕДЛОЖКИ ==========
 @dp.callback_query(F.data == "feed_menu")
 async def show_feed_menu(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
     update_user_data(callback.from_user.id, callback.from_user.username, callback.from_user.first_name)
-    caption = f"📱 **Лента постов**\n\nВсего постов в ленте: **{len(feed_posts)}**\n\nВыбери действие:"
-    await callback.message.edit_media(
-        media=InputMediaPhoto(media=START_IMAGE, caption=caption, parse_mode="Markdown"),
-        reply_markup=get_feed_menu_keyboard()
-    )
+    caption = f"📱 Лента постов\n\nВсего постов в ленте: {len(feed_posts)}\n\nВыбери действие:"
+    try:
+        await callback.message.edit_media(
+            media=InputMediaPhoto(media=START_IMAGE, caption=caption),
+            reply_markup=get_feed_menu_keyboard()
+        )
+    except TelegramBadRequest:
+        await callback.message.delete()
+        await callback.message.answer_photo(
+            photo=START_IMAGE,
+            caption=caption,
+            reply_markup=get_feed_menu_keyboard()
+        )
     await callback.answer()
 
 @dp.callback_query(F.data == "view_random_post")
@@ -259,25 +277,42 @@ async def view_random_post(callback: types.CallbackQuery):
     if not feed_posts:
         await callback.answer("📭 Лента пока пуста! Будь первым!", show_alert=True)
         return
+    
     post = random.choice(feed_posts)
     author_name = post.get('author_name', 'Аноним')
     author_username = post.get('author_username', '')
-    author_info = f"👤 **От:** {author_name}" + (f" (@{author_username})" if author_username else "")
+    author_info = f"👤 От: {author_name}" + (f" (@{author_username})" if author_username else "")
     full_caption = f"{author_info}\n📅 {post.get('date', 'Неизвестно')}\n{'-'*30}\n\n{post.get('text', '')}"
-    
+
     try:
         if post.get('photo'):
             await callback.message.edit_media(
-                media=InputMediaPhoto(media=post['photo'], caption=full_caption, parse_mode="Markdown"),
+                media=InputMediaPhoto(media=post['photo'], caption=full_caption),
                 reply_markup=get_after_post_keyboard()
             )
         else:
-            await callback.message.delete()
-            await callback.message.answer(text=full_caption, reply_markup=get_after_post_keyboard(), parse_mode="Markdown")
+            # ИСПРАВЛЕНО: правильная отправка текстового поста
+            await callback.message.edit_text(
+                text=full_caption, 
+                reply_markup=get_after_post_keyboard()
+            )
     except TelegramBadRequest as e:
-        if "message is not modified" not in str(e):
-             # Если пост тот же самый, может возникнуть ошибка, что сообщение не изменилось. Это нормально.
-            print(f"Ошибка при показе поста: {e}")
+        if "message is not modified" in str(e):
+            pass
+        else:
+            # ИСПРАВЛЕНО: если не удалось отредактировать, отправляем новое
+            await callback.message.delete()
+            if post.get('photo'):
+                await callback.message.answer_photo(
+                    photo=post['photo'],
+                    caption=full_caption,
+                    reply_markup=get_after_post_keyboard()
+                )
+            else:
+                await callback.message.answer(
+                    text=full_caption,
+                    reply_markup=get_after_post_keyboard()
+                )
     await callback.answer()
 
 @dp.callback_query(F.data == "add_post")
@@ -286,8 +321,8 @@ async def start_add_post(callback: types.CallbackQuery, state: FSMContext):
     update_user_data(callback.from_user.id, callback.from_user.username, callback.from_user.first_name)
     await callback.message.delete()
     await callback.message.answer(
-        "✍️ **Добавить пост в ленту**\n\nОтправь мне текст или фото (можно с подписью).",
-        reply_markup=get_cancel_keyboard(), parse_mode="Markdown"
+        "✍️ Добавить пост в ленту\n\nОтправь мне текст или фото (можно с подписью).",
+        reply_markup=get_cancel_keyboard()
     )
     await callback.answer()
 
@@ -295,10 +330,14 @@ async def start_add_post(callback: types.CallbackQuery, state: FSMContext):
 async def handle_new_post(message: types.Message, state: FSMContext):
     update_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
     post_data = {
-        'author_id': message.from_user.id, 'author_name': message.from_user.first_name,
-        'author_username': message.from_user.username, 'date': datetime.now().strftime('%d.%m.%Y %H:%M'),
-        'text': '', 'photo': None
+        'author_id': message.from_user.id, 
+        'author_name': message.from_user.first_name,
+        'author_username': message.from_user.username, 
+        'date': datetime.now().strftime('%d.%m.%Y %H:%M'),
+        'text': '', 
+        'photo': None
     }
+    
     if message.photo:
         post_data['photo'] = message.photo[-1].file_id
         post_data['text'] = message.caption or ''
@@ -311,8 +350,14 @@ async def handle_new_post(message: types.Message, state: FSMContext):
     feed_posts.append(post_data)
     save_data(FEED_FILE, feed_posts)
     await state.clear()
-    await message.answer("✅ **Пост добавлен в ленту!**", reply_markup=get_start_keyboard())
-
+    
+    # ИСПРАВЛЕНО: отправка с фото
+    await message.answer_photo(
+        photo=START_IMAGE,
+        caption="✅ **Пост добавлен в ленту!**",
+        reply_markup=get_start_keyboard(),
+        parse_mode="Markdown"
+    )
 
 @dp.callback_query(F.data == "send_suggestion")
 async def start_suggestion(callback: types.CallbackQuery, state: FSMContext):
@@ -320,8 +365,8 @@ async def start_suggestion(callback: types.CallbackQuery, state: FSMContext):
     update_user_data(callback.from_user.id, callback.from_user.username, callback.from_user.first_name)
     await callback.message.delete()
     await callback.message.answer(
-        "✉️ **Отправка сообщения админу**\n\nНапиши, что хочешь передать. Можно отправить текст, фото, видео и т.д.",
-        reply_markup=get_cancel_keyboard(), parse_mode="Markdown"
+        "✉️ Отправка сообщения админу\n\nНапиши, что хочешь передать. Можно отправить текст, фото, видео и т.д.",
+        reply_markup=get_cancel_keyboard()
     )
     await callback.answer()
 
@@ -329,95 +374,114 @@ async def start_suggestion(callback: types.CallbackQuery, state: FSMContext):
 async def handle_suggestion(message: types.Message, state: FSMContext):
     update_user_data(message.from_user.id, message.from_user.username, message.from_user.first_name)
     username = f"@{message.from_user.username}" if message.from_user.username else "скрыт"
-    info_text = f"📩 **Сообщение от** {message.from_user.first_name} ({username})\n🆔 `{message.from_user.id}`"
+    info_text = f"📩 Сообщение от {message.from_user.first_name} ({username})\n🆔 {message.from_user.id}"
+    
     try:
         await message.forward(chat_id=ADMIN_ID)
-        await bot.send_message(chat_id=ADMIN_ID, text=info_text, parse_mode="Markdown")
-        await message.answer("✅ **Сообщение отправлено!**", reply_markup=get_start_keyboard())
+        await bot.send_message(chat_id=ADMIN_ID, text=info_text)
+        # ИСПРАВЛЕНО: отправка с фото
+        await message.answer_photo(
+            photo=START_IMAGE,
+            caption="✅ Сообщение отправлено!",
+            reply_markup=get_start_keyboard()
+        )
     except Exception as e:
         await message.answer("⚠️ Ошибка отправки. Попробуй позже.", reply_markup=get_start_keyboard())
         print(f"Ошибка при пересылке сообщения от {message.from_user.id}: {e}")
+    
     await state.clear()
-
 
 # ========== СЕКЦИЯ АДМИНИСТРИРОВАНИЯ ==========
-
 @dp.message(Command("admin"))
-@dp.callback_query(F.data == "admin_panel")
-async def show_admin_panel(message: types.Message | types.CallbackQuery, state: FSMContext):
-    if message.from_user.id != ADMIN_ID: return
+async def show_admin_panel_command(message: types.Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
     await state.clear()
-    text = f"👑 **Админ-панель**\n\nДобро пожаловать, повелитель!"
-    markup = get_admin_keyboard()
+    text = "👑 Админ-панель\n\nДобро пожаловать, повелитель!"
+    await message.answer(text, reply_markup=get_admin_keyboard())
+
+@dp.callback_query(F.data == "admin_panel")
+async def show_admin_panel(callback: types.CallbackQuery, state: FSMContext):
+    if callback.from_user.id != ADMIN_ID:
+        return
+    await state.clear()
+    text = "👑 Админ-панель\n\nДобро пожаловать, повелитель!"
     
-    if isinstance(message, types.Message):
-        await message.answer(text, reply_markup=markup, parse_mode="Markdown")
-    else:
-        try:
-            await message.message.edit_text(text, reply_markup=markup, parse_mode="Markdown")
-        except TelegramBadRequest: # Если сообщение не изменилось
-            pass
-        await message.answer()
+    try:
+        await callback.message.edit_text(text, reply_markup=get_admin_keyboard())
+    except TelegramBadRequest:
+        await callback.message.delete()
+        await callback.message.answer(text, reply_markup=get_admin_keyboard())
+    await callback.answer()
 
 @dp.callback_query(F.data == "admin_stats")
 async def admin_show_stats(callback: types.CallbackQuery):
-    if callback.from_user.id != ADMIN_ID: return
+    if callback.from_user.id != ADMIN_ID:
+        return
     stats_text = (
         f"📊 **Статистика**\n\n"
-        f"👥 Всего пользователей: `{len(users_data)}`\n"
-        f"📰 Постов в ленте: `{len(feed_posts)}`"
+        f"👥 Всего пользователей: {len(users_data)}\n"
+        f"📰 Постов в ленте: {len(feed_posts)}"
     )
     await callback.message.edit_text(stats_text, reply_markup=get_admin_stats_keyboard(), parse_mode="Markdown")
     await callback.answer()
 
 @dp.callback_query(F.data.startswith("admin_users_page:"))
 async def show_users_list(callback: types.CallbackQuery):
-    if callback.from_user.id != ADMIN_ID: return
+    if callback.from_user.id != ADMIN_ID:
+        return
     page = int(callback.data.split(":")[1])
     await callback.message.edit_text(
-        f"👥 **Список пользователей** (Страница {page + 1})",
+        f"👥 Список пользователей (Страница {page + 1})",
         reply_markup=get_users_page_keyboard(page)
     )
     await callback.answer()
 
 @dp.callback_query(F.data.startswith("admin_user_select:"))
 async def select_user_to_message(callback: types.CallbackQuery, state: FSMContext):
-    if callback.from_user.id != ADMIN_ID: return
+    if callback.from_user.id != ADMIN_ID:
+        return
     user_id = callback.data.split(":")[1]
     user_name = users_data.get(user_id, {}).get('first_name', f"ID: {user_id}")
-    
+
     await state.set_state(AdminState.writing_to_user)
     await state.update_data(target_user_id=user_id)
-    
+
     await callback.message.edit_text(
         f"✍️ Отправка сообщения пользователю **{user_name}**.\n\n"
         f"Просто отправь мне то, что хочешь ему переслать.",
-        reply_markup=get_cancel_keyboard(callback_data=f"admin_users_page:0"),
+        reply_markup=get_cancel_keyboard(callback_data="admin_users_page:0"),
         parse_mode="Markdown"
     )
     await callback.answer()
 
 @dp.message(AdminState.writing_to_user)
 async def send_message_to_user(message: types.Message, state: FSMContext):
-    if message.from_user.id != ADMIN_ID: return
+    if message.from_user.id != ADMIN_ID:
+        return
     state_data = await state.get_data()
     target_user_id = state_data.get("target_user_id")
     await state.clear()
-    
+
     if not target_user_id:
         await message.answer("⚠️ Ошибка, ID пользователя не найден.", reply_markup=get_admin_keyboard())
         return
 
     try:
         await message.copy_to(chat_id=target_user_id)
-        await message.answer(f"✅ Сообщение успешно отправлено!", reply_markup=get_admin_keyboard())
+        await message.answer("✅ Сообщение успешно отправлено!", reply_markup=get_admin_keyboard())
     except (TelegramBadRequest, TelegramAPIError) as e:
-        await message.answer(f"❌ Не удалось отправить. Возможно, юзер заблокировал бота.\nОшибка: `{e}`", parse_mode="Markdown", reply_markup=get_admin_keyboard())
+        await message.answer(
+            f"❌ Не удалось отправить. Возможно, юзер заблокировал бота.\nОшибка: `{e}`",
+            parse_mode="Markdown",
+            reply_markup=get_admin_keyboard()
+        )
 
 @dp.callback_query(F.data.startswith("admin_view_posts:"))
 async def admin_view_post(callback: types.CallbackQuery):
-    if callback.from_user.id != ADMIN_ID: return
-    
+    if callback.from_user.id != ADMIN_ID:
+        return
+
     if not feed_posts:
         await callback.answer("Лента пуста!", show_alert=True)
         return
@@ -432,9 +496,9 @@ async def admin_view_post(callback: types.CallbackQuery):
         f"📜 **Пост #{post_index + 1}**\n{author_info}\n"
         f"📅 {post.get('date', 'Неизвестно')}\n{'-'*30}\n\n{post.get('text', '')}"
     )
-    
+
     markup = get_view_post_keyboard(post_index, len(feed_posts))
-    
+
     try:
         if post.get('photo'):
             await callback.message.edit_media(
@@ -443,35 +507,87 @@ async def admin_view_post(callback: types.CallbackQuery):
             )
         else:
             await callback.message.edit_text(full_caption, reply_markup=markup, parse_mode="Markdown")
-    except TelegramBadRequest: pass
+    except TelegramBadRequest:
+        # ИСПРАВЛЕНО: если не удалось отредактировать, отправляем новое
+        await callback.message.delete()
+        if post.get('photo'):
+            await callback.message.answer_photo(
+                photo=post['photo'],
+                caption=full_caption,
+                reply_markup=markup,
+                parse_mode="Markdown"
+            )
+        else:
+            await callback.message.answer(full_caption, reply_markup=markup, parse_mode="Markdown")
     await callback.answer()
 
 @dp.callback_query(F.data.startswith("admin_delete_post:"))
 async def admin_delete_post_confirm(callback: types.CallbackQuery):
-    if callback.from_user.id != ADMIN_ID: return
+    if callback.from_user.id != ADMIN_ID:
+        return
     post_index = int(callback.data.split(":")[1])
     await callback.message.edit_text(
-        f"Вы уверены, что хотите удалить пост #{post_index + 1}?",
+        f"❓ Вы уверены, что хотите удалить пост #{post_index + 1}?",
         reply_markup=get_confirm_delete_keyboard(post_index)
     )
     await callback.answer()
 
 @dp.callback_query(F.data.startswith("admin_confirm_delete:"))
 async def admin_confirm_delete_action(callback: types.CallbackQuery):
-    if callback.from_user.id != ADMIN_ID: return
+    if callback.from_user.id != ADMIN_ID:
+        return
     post_index = int(callback.data.split(":")[1])
-    
+
     if post_index < len(feed_posts):
         feed_posts.pop(post_index)
         save_data(FEED_FILE, feed_posts)
         await callback.answer("✅ Пост удален!", show_alert=True)
-    
+
     new_index = min(post_index, len(feed_posts) - 1)
     if new_index < 0:
         await admin_show_stats(callback)
     else:
         callback.data = f"admin_view_posts:{new_index}"
         await admin_view_post(callback)
+
+# ИСПРАВЛЕНО: добавлен обработчик рассылки
+@dp.callback_query(F.data == "admin_broadcast")
+async def admin_start_broadcast(callback: types.CallbackQuery, state: FSMContext):
+    if callback.from_user.id != ADMIN_ID:
+        return
+    await state.set_state(AdminState.waiting_for_broadcast)
+    await callback.message.edit_text(
+        "📢 **Рассылка**\n\nОтправь сообщение, которое нужно разослать всем пользователям.",
+        reply_markup=get_cancel_keyboard(callback_data="admin_panel"),
+        parse_mode="Markdown"
+    )
+    await callback.answer()
+
+@dp.message(AdminState.waiting_for_broadcast)
+async def admin_do_broadcast(message: types.Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+    await state.clear()
+    
+    success = 0
+    failed = 0
+    
+    for user_id in users_data.keys():
+        try:
+            await message.copy_to(chat_id=int(user_id))
+            success += 1
+            await asyncio.sleep(0.05)  # Задержка чтобы не словить лимиты
+        except Exception as e:
+            failed += 1
+            print(f"Не удалось отправить {user_id}: {e}")
+    
+    await message.answer(
+        f"✅ **Рассылка завершена!**\n\n"
+        f"✔️ Отправлено: {success}\n"
+        f"❌ Не удалось: {failed}",
+        reply_markup=get_admin_keyboard(),
+        parse_mode="Markdown"
+    )
 
 @dp.callback_query(F.data == "noop")
 async def noop_callback(callback: types.CallbackQuery):
@@ -480,7 +596,7 @@ async def noop_callback(callback: types.CallbackQuery):
 # ========== ЗАПУСК БОТА ==========
 async def main():
     print("🚀 ЗАПУСК БОТА...")
-    set_all_users_offline() 
+    set_all_users_offline()
     await dp.start_polling(bot)
 
 if __name__ == '__main__':

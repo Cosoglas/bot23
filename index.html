@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+body{
+    margin:0;
+    background:#e9e9e9;
+    font-family:Arial;
+    display:flex;
+}
+
+/* Sidebar */
+#sidebar{
+    width:200px;
+    background:#ddd;
+    padding:20px;
+}
+
+.menu-btn{
+    background:white;
+    border-radius:15px;
+    padding:10px;
+    margin-bottom:10px;
+    cursor:pointer;
+    text-align:center;
+}
+
+/* Main */
+#main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+#top{
+    width:80%;
+    display:flex;
+    justify-content:space-between;
+    margin-top:20px;
+}
+
+#scoreBox{
+    background:white;
+    padding:10px 20px;
+    border-radius:20px;
+}
+
+canvas{
+    margin-top:20px;
+    background:#f7f7f7;
+    border-radius:40px;
+}
+
+#controls{
+    margin-top:20px;
+    font-size:30px;
+    text-align:center;
+    cursor:pointer;
+}
+
+#shop{
+    margin-top:20px;
+    background:white;
+    padding:15px;
+    border-radius:20px;
+}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+    <div class="menu-btn" onclick="openShop()">🛒 Магазин</div>
+</div>
+
+<div id="main">
+
+<div id="top">
+    <div>🎮 Snake Pro</div>
+    <div id="scoreBox">Яблоки: <span id="score">0</span></div>
+</div>
+
+<canvas id="game" width="400" height="400"></canvas>
+
+<div id="controls">
+    ⬆<br>
+    ⬅ ➡<br>
+    ⬇
+</div>
+
+<div id="shop" style="display:none;">
+    <h3>Апгрейд скорости</h3>
+    <button onclick="buySpeed()">Купить</button>
+</div>
+
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+const user_id = tg.initDataUnsafe.user.id;
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let speedMultiplier = 1;
+
+fetch(`/get_upgrades/${user_id}`)
+.then(res=>res.json())
+.then(data=>{
+    speedMultiplier = data.speed;
+});
+
+let snake = [{x:200,y:200}];
+let dx = 2;
+let dy = 0;
+let apples = 0;
+
+let apple = {x:100,y:100};
+
+const eatSound = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+
+function drawEye(x,y,dirX,dirY){
+    ctx.fillStyle="white";
+    ctx.beginPath();
+    ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle="black";
+    ctx.beginPath();
+    ctx.arc(x+dirX*2,y+dirY*2,2,0,Math.PI*2);
+    ctx.fill();
+}
+
+function game(){
+    ctx.clearRect(0,0,400,400);
+
+    snake[0].x += dx*speedMultiplier;
+    snake[0].y += dy*speedMultiplier;
+
+    if(Math.abs(snake[0].x-apple.x)<10 && Math.abs(snake[0].y-apple.y)<10){
+        apples++;
+        document.getElementById("score").innerText=apples;
+        eatSound.play();
+        apple = {x:Math.random()*380,y:Math.random()*380};
+    }
+
+    snake.unshift({x:snake[0].x,y:snake[0].y});
+    snake.pop();
+
+    ctx.fillStyle="black";
+    ctx.fillRect(apple.x,apple.y,10,10);
+
+    ctx.fillStyle="gray";
+    snake.forEach((s,i)=>{
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,8,0,Math.PI*2);
+        ctx.fill();
+
+        if(i===0){
+            drawEye(s.x-3,s.y-3,dx,dy);
+            drawEye(s.x+3,s.y-3,dx,dy);
+        }
+    });
+
+    requestAnimationFrame(game);
+}
+
+document.addEventListener("keydown",(e)=>{
+    if(e.key==="ArrowUp"){dx=0;dy=-2}
+    if(e.key==="ArrowDown"){dx=0;dy=2}
+    if(e.key==="ArrowLeft"){dx=-2;dy=0}
+    if(e.key==="ArrowRight"){dx=2;dy=0}
+});
+
+game();
+
+function openShop(){
+    document.getElementById("shop").style.display="block";
+}
+
+function buySpeed(){
+    fetch("/buy_speed",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({user_id:user_id})
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.success){
+            alert("Апгрейд куплен!");
+            speedMultiplier++;
+        }else{
+            alert("Недостаточно очков!");
+        }
+    });
+}
+
+window.addEventListener("beforeunload", ()=>{
+ fetch("/game_result",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+     user_id:user_id,
+     apples:apples
+   })
+ });
+});
+</script>
+
+</body>
+</html>
